@@ -15,8 +15,8 @@ class DatabaseConnector:
             credentials = self.read_db_creds()
         db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         engine = create_engine(db_url)
-        self.engine = engine  # Save the engine as an instance variable for later use
-        return engine
+        self.engine = engine  # Save of the engine as an instance variable for later use
+        return engine     
     
 if __name__ == '__main__':
     db_connector = DatabaseConnector()
