@@ -1,3 +1,4 @@
+import pandas as pd
 from sqlalchemy import inspect
 from database_utils import DatabaseConnector
 
@@ -27,4 +28,4 @@ extractor = DataExtractor()
 
 # Call the list_db_tables method
 tables = extractor.list_db_tables()
-print(tables)
+print(f"TABLES: {tables}")
