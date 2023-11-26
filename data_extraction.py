@@ -32,13 +32,14 @@ class DataExtractor:
             print(f"Error listing tables: {e}")
             return None
 
-# Create an instance of DataExtractor
-extractor = DataExtractor()
+if __name__== '__main__':
+    # Create an instance of DataExtractor
+    extractor = DataExtractor()
 
-# Call the list_db_tables method
-tables = extractor.list_db_tables(engine)
-print(f"TABLES: {tables}")
+    # Call the list_db_tables method
+    tables = extractor.list_db_tables(engine)
+    print(f"TABLES: {tables}")
 
-user_data_df = extractor.read_rds_table(db_connector, engine, 'legacy_users')
-print("User Data DataFrame:")
-print(user_data_df)
+    user_data_df = extractor.read_rds_table(db_connector, engine, 'legacy_users')
+    print("User Data DataFrame:")
+    print(user_data_df)
