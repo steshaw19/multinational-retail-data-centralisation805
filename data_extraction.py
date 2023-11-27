@@ -35,7 +35,3 @@ extractor = DataExtractor()
 
 # Read data from the RDS table (example table name: 'legacy_users')
 user_data_df = extractor.read_rds_table('legacy_users')
-
-# Print the DataFrame
-print("User Data DataFrame:")
-print(user_data_df)
