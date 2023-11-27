@@ -15,6 +15,7 @@ engine = db_connector.init_db_engine(credentials)
 
 # Create an instance of DataExtractor
 extractor = DataExtractor()
+user_data_df = extractor.read_rds_table('legacy_users')
 
 
 class DataCleaning:
@@ -71,13 +72,16 @@ class DataCleaning:
             print(f"Error cleaning data: {e}")
             return None
 
-if __name__ == '__main__':
+if __name__=='__main__': 
     data_cleaner = DataCleaning()
     cleaned_data = data_cleaner.clean_user_data(user_data_df)
-    print("Cleaned Data:")
-    print(cleaned_data)
-    duplicates = cleaned_data[cleaned_data.index.duplicated()]
-    print(f"Duplicate rows: {duplicates}")
+    
+    try:
+        # Call upload_to_db method from db_connector instance
+        db_connector.upload_to_db(cleaned_data, 'dim_users')
+    except:
+        print("Data cleaning and upload failed.")
+
     
             # Find duplicates based off unique user id            
             # This indicated that the NULL values were the only duplicates and could be removed.
