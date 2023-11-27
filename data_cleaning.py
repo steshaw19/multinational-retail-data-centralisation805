@@ -81,12 +81,3 @@ if __name__=='__main__':
         db_connector.upload_to_db(cleaned_data, 'dim_users')
     except:
         print("Data cleaning and upload failed.")
-
-    
-            # Find duplicates based off unique user id            
-            # This indicated that the NULL values were the only duplicates and could be removed.
-            # duplicate_rows_subset = user_data_df[user_data_df.duplicated(subset=['user_uuid'])]
-
-                 
-
-
