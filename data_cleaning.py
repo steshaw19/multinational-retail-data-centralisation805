@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from data_extraction import user_data_df
 from database_utils import DatabaseConnector
 from data_extraction import DataExtractor
 
@@ -8,15 +7,16 @@ from data_extraction import DataExtractor
 db_connector = DatabaseConnector()
 
 # Get credentials
-credentials = db_connector.read_db_creds()
+destination_credentials = db_connector.read_destination_db_creds()
 
 # Initialize the database engine
-engine = db_connector.init_db_engine(credentials)
+destination_engine = db_connector.init_destination_db_engine(destination_credentials)
 
 # Create an instance of DataExtractor
 extractor = DataExtractor()
-user_data_df = extractor.read_rds_table('legacy_users')
 
+# Read data from the RDS table (example table name: 'legacy_users')
+user_data_df = extractor.read_rds_table('legacy_users')
 
 class DataCleaning:
     def clean_user_data(self, user_data_df):
