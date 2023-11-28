@@ -14,7 +14,7 @@ class DataExtractor:
     def read_rds_table(self, table_name):
         try:
             query = f"SELECT * FROM {table_name}"
-            df = pd.read_sql_query(query, self.engine, index_col='index')
+            df = pd.read_sql_query(query, self.source_engine, index_col='index')
             return df
         except Exception as e:
             print(f"Error reading table {table_name}: {e}")
@@ -23,7 +23,7 @@ class DataExtractor:
     def list_db_tables(self):
         try:
             # Use the inspector to get table names
-            inspector = inspect(self.engine)
+            inspector = inspect(self.source_engine)
             table_names = inspector.get_table_names()
             return table_names
         except Exception as e:
