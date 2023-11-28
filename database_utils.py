@@ -15,14 +15,14 @@ class DatabaseConnector:
     def init_source_db_engine(self, credentials=None):
         if credentials is None:
             credentials = self.read_source_db_creds()
-        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}?isolation_level=read_committed"
+        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         self.source_engine = create_engine(db_url)
         return self.source_engine
     
     def init_destination_db_engine(self, credentials=None):
         if credentials is None:
             credentials = self.read_destination_db_creds()
-        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}?isolation_level=read_committed"
+        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         self.destination_engine = create_engine(db_url)
         return self.destination_engine
     

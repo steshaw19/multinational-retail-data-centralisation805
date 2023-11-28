@@ -9,7 +9,7 @@ class DataExtractor:
         # Get credentials
         self.credentials = self.db_connector.read_source_db_creds()
         # Initialize the database engine
-        self.engine = self.db_connector.init_source_db_engine(self.credentials)
+        self.source_engine = self.db_connector.init_source_db_engine(self.credentials)
 
     def read_rds_table(self, table_name):
         try:
@@ -35,4 +35,3 @@ extractor = DataExtractor()
 
 # Read data from the RDS table (example table name: 'legacy_users')
 user_data_df = extractor.read_rds_table('legacy_users')
-
