@@ -2,38 +2,52 @@ import yaml
 from sqlalchemy import create_engine
 
 class DatabaseConnector:
-    def read_db_creds(self, file_path='db_creds.yaml'):
+    def read_source_db_creds(self, file_path='db_creds.yaml'):
         with open(file_path, 'r') as file:
-            credentials = yaml.safe_load(file)
-        return credentials
+            source_credentials = yaml.safe_load(file)
+        return source_credentials
     
-    ## Now create a method init_db_engine which will read the credentials from the 
-    ## return of read_db_creds and initialise and return an sqlalchemy database engine.
+    def read_destination_db_creds(self, file_path='sales_data_creds.yaml'):
+        with open(file_path, 'r') as file:
+            destination_credentials = yaml.safe_load(file)
+        return destination_credentials
     
-    def init_db_engine(self, credentials=None):
+    def init_source_db_engine(self, credentials=None):
         if credentials is None:
-            credentials = self.read_db_creds()
-        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
-        engine = create_engine(db_url, isolation_level="READ COMMITTED")
-        self.engine = engine  # Save of the engine as an instance variable for later use
-        return engine
+            credentials = self.read_source_db_creds()
+        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}?isolation_level=read_committed"
+        self.source_engine = create_engine(db_url)
+        return self.source_engine
+    
+    def init_destination_db_engine(self, credentials=None):
+        if credentials is None:
+            credentials = self.read_destination_db_creds()
+        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}?isolation_level=read_committed"
+        self.destination_engine = create_engine(db_url)
+        return self.destination_engine
     
     def upload_to_db(self, df, table_name, if_exists='replace'):
         try:
             from data_cleaning import DataCleaning  # Move inside method to stop circular dependency between this file and data_cleaning.py
             df_cleaned = DataCleaning().clean_user_data(df)
-            df_cleaned.to_sql(table_name, self.engine, if_exists=if_exists, index=False)
+            df_cleaned.to_sql(table_name, self.destination_engine, if_exists=if_exists, index=False)
             print(f"Data uploaded to {table_name} successfully.")
         except Exception as e:
             print(f"Error uploading data to {table_name}: {e}")   
     
 if __name__ == '__main__':
     db_connector = DatabaseConnector()
-    credentials = db_connector.read_db_creds()
+    source_credentials = db_connector.read_source_db_creds()
+    destination_credentials = db_connector.read_destination_db_creds()
 
     try:
-        # GET THE CONNECTION OBJECT (ENGINE) FOR THE DATABASE
-        engine = db_connector.init_db_engine(credentials)
-        print(f"Connection to the {credentials['RDS_HOST']} for user {credentials['RDS_USER']} created successfully.")
+        source_engine = db_connector.init_source_db_engine(source_credentials)
+        print(f"Connection to the {source_credentials['RDS_HOST']} for user {source_credentials['RDS_USER']} created successfully.")
+    except Exception as ex:
+        print("Connection could not be made due to the following error: \n", ex)
+
+    try:
+        destination_engine = db_connector.init_destination_db_engine(destination_credentials)
+        print(f"Connection to the {destination_credentials['RDS_HOST']} for user {destination_credentials['RDS_USER']} created successfully.")
     except Exception as ex:
         print("Connection could not be made due to the following error: \n", ex)
