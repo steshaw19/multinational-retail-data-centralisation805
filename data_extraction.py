@@ -34,7 +34,6 @@ class DataExtractor:
     def retrieve_pdf_data(self, pdf_link):
         # Use tabula to extract tables from the PDF
         try:
-            # You can customize the options based on your PDF structure
             pdf_df = tabula.read_pdf(pdf_link, pages='all', multiple_tables=True)
             
             # Concatenate all tables into a single DataFrame
@@ -49,7 +48,7 @@ class DataExtractor:
 data_extractor = DataExtractor()
 
 # Read data from the RDS table (example table name: 'legacy_users')
-## user_data_df = data_extractor.read_rds_table('legacy_users')
+user_data_df = data_extractor.read_rds_table('legacy_users')
 
 # Provide the PDF link as an argument to the retrieve_pdf_data method
 pdf_data = data_extractor.retrieve_pdf_data('https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf')
