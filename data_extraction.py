@@ -45,10 +45,10 @@ class DataExtractor:
             return None
 
 # Create an instance of the DataExtractor class
-data_extractor = DataExtractor()
+extractor = DataExtractor()
 
 # Read data from the RDS table (example table name: 'legacy_users')
-user_data_df = data_extractor.read_rds_table('legacy_users')
+user_data_df = extractor.read_rds_table('legacy_users')
 
 # Provide the PDF link as an argument to the retrieve_pdf_data method
-pdf_data = data_extractor.retrieve_pdf_data('https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf')
+pdf_data = extractor.retrieve_pdf_data('https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf')
