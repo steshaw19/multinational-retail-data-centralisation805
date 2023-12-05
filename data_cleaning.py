@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from database_utils import DatabaseConnector
 from data_extraction import DataExtractor
+from data_extraction import pdf_data
 
 # Instantiate DatabaseConnector to access its methods
 db_connector = DatabaseConnector()
@@ -19,67 +20,102 @@ extractor = DataExtractor()
 user_data_df = extractor.read_rds_table('legacy_users')
 
 class DataCleaning:
-    def clean_user_data(self, user_data_df):
+    # def clean_user_data(self, user_data_df):
+    #     try:
+    #         if user_data_df is not None:
+    #             # Replace 'NULL' with NaN
+    #             user_data_df.replace({'NULL': np.nan}, inplace=True)
+
+    #             # Drop rows with any NULL value in any column
+    #             user_data_df = user_data_df.dropna()
+
+    #             # Filter rows where the user ID has the desired length
+    #             user_data_df = user_data_df[user_data_df['user_uuid'].str.len() == 36]
+
+    #             # Drop any names that contain numbers but checks if the name is NULL first
+    #             user_data_df = user_data_df[user_data_df[['first_name', 'last_name']].notnull().all(axis=1) &
+    #                         user_data_df[['first_name', 'last_name']].applymap(lambda x: x.isalpha()).all(axis=1)]
+
+    #             # Removes email address that are invalid (does not have an @ sign)
+    #             mask = user_data_df['email_address'].str.contains('@', na=False)
+    #             user_data_df = user_data_df[mask]
+
+    #             # Convert date columns to datetime format
+    #             date_columns = ['date_of_birth', 'join_date']
+    #             user_data_df[date_columns] = user_data_df[date_columns].apply(pd.to_datetime, errors='coerce')
+
+    #             # Create a boolean mask for rows with numbers in the 'country' column
+    #             no_number_mask_country = ~user_data_df['country'].str.contains(r'\d', na=False)
+
+    #             # Filter the DataFrame using the boolean mask
+    #             user_data_df = user_data_df[no_number_mask_country]
+
+    #             # Create a boolean mask for rows with numbers in the 'column' column
+    #             no_number_mask_company = ~user_data_df['company'].str.contains(r'\d', na=False)
+
+    #             # Filter the DataFrame using the boolean mask
+    #             user_data_df = user_data_df[no_number_mask_company]
+
+    #             # Create a boolean mask for rows with valid country codes (2 or 3 characters)
+    #             valid_country_code_mask = user_data_df['country_code'].str.len().isin([2, 3])
+
+    #             # Filter the DataFrame using the boolean mask
+    #             user_data_df = user_data_df[valid_country_code_mask]
+
+    #             # Create a boolean mask for rows with phone numbers containing letters (excluding 'ext')
+    #             # valid_phone_mask = ~user_data_df['phone_number'].str.contains(r'[^0-9extEXT()+.-'']', na=False)
+
+    #             # Filter the DataFrame using the boolean mask
+    #             # user_data_df = user_data_df[valid_phone_mask]
+
+    #         return user_data_df
+        
+    #     except Exception as e:
+    #         print(f"Error cleaning user data: {e}")
+    #         return None
+    
+    def clean_pdf_data(self, pdf_data):
         try:
-            if user_data_df is not None:
+            if pdf_data is not None:
                 # Replace 'NULL' with NaN
-                user_data_df.replace({'NULL': np.nan}, inplace=True)
+                pdf_data.replace({'NULL': np.nan}, inplace=True)
 
                 # Drop rows with any NULL value in any column
-                user_data_df = user_data_df.dropna()
+                pdf_data = pdf_data.dropna()
 
-                # Filter rows where the user ID has the desired length
-                user_data_df = user_data_df[user_data_df['user_uuid'].str.len() == 36]
+                # Convert 'card_number' to numeric, and drop rows where conversion is not possible
+                pdf_data.loc[:, 'card_number'] = pd.to_numeric(pdf_data['card_number'], errors='coerce').round().astype('Int64')
+                pdf_data = pdf_data.dropna(subset=['card_number'])
 
-                # Drop any names that contain numbers but checks if the name is NULL first
-                user_data_df = user_data_df[user_data_df[['first_name', 'last_name']].notnull().all(axis=1) &
-                            user_data_df[['first_name', 'last_name']].applymap(lambda x: x.isalpha()).all(axis=1)]
+                # Include only 'card_number' values with a length between 8 and 19 (length taken from online research)
+                pdf_data = pdf_data[pdf_data['card_number'].astype(str).apply(len).between(8, 19)]
 
-                # Removes email address that are invalid (does not have an @ sign)
-                mask = user_data_df['email_address'].str.contains('@', na=False)
-                user_data_df = user_data_df[mask]
-
-                # Convert date columns to datetime format
-                date_columns = ['date_of_birth', 'join_date']
-                user_data_df[date_columns] = user_data_df[date_columns].apply(pd.to_datetime, errors='coerce')
-
-                # Create a boolean mask for rows with numbers in the 'country' column
-                no_number_mask_country = ~user_data_df['country'].str.contains(r'\d', na=False)
-
-                # Filter the DataFrame using the boolean mask
-                user_data_df = user_data_df[no_number_mask_country]
-
-                # Create a boolean mask for rows with numbers in the 'column' column
-                no_number_mask_company = ~user_data_df['company'].str.contains(r'\d', na=False)
-
-                # Filter the DataFrame using the boolean mask
-                user_data_df = user_data_df[no_number_mask_company]
-
-                # Create a boolean mask for rows with valid country codes (2 or 3 characters)
-                valid_country_code_mask = user_data_df['country_code'].str.len().isin([2, 3])
-
-                # Filter the DataFrame using the boolean mask
-                user_data_df = user_data_df[valid_country_code_mask]
-
-                # Create a boolean mask for rows with phone numbers containing letters (excluding 'ext')
-                # valid_phone_mask = ~user_data_df['phone_number'].str.contains(r'[^0-9extEXT()+.-'']', na=False)
-
-                # Filter the DataFrame using the boolean mask
-                # user_data_df = user_data_df[valid_phone_mask]
-
-            return user_data_df
-        
+                # Makes data_payment_confirmed date time values (excluding expiry date as this has a specific format)
+                date_columns = ['date_payment_confirmed']
+                pdf_data[date_columns] = pdf_data[date_columns].apply(pd.to_datetime, errors='coerce')
+                
+                return pdf_data
+                
         except Exception as e:
-            print(f"Error cleaning data: {e}")
+            print(f"Error cleaning card details data: {e}")
             return None
+
 
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
-    cleaned_data = data_cleaner.clean_user_data(user_data_df)
+    cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
+    cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
     
     try:
-        # Call upload_to_db method from db_connector instance
-        if cleaned_data is not None:
-            db_connector.upload_to_db(cleaned_data, 'dim_users')
+       # Call upload_to_db method from db_connector instance
+       if cleaned_user_data is not None:
+           db_connector.upload_to_db(cleaned_user_data, 'dim_users')
     except:
-        print("Data cleaning and upload failed.")
+       print("Data cleaning and upload failed for User Data.")
+
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_pdf_data is not None:
+            db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
+    except:
+        print("Data cleaning and upload failed for PDF.")
