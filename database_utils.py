@@ -2,6 +2,11 @@ import yaml
 from sqlalchemy import create_engine
 
 class DatabaseConnector:
+    def __init__(self):
+        # Initialize both source and destination engines in the constructor
+        self.source_engine = self.init_source_db_engine()
+        self.destination_engine = self.init_destination_db_engine()
+        
     def read_source_db_creds(self, file_path='db_creds.yaml'):
         with open(file_path, 'r') as file:
             source_credentials = yaml.safe_load(file)
@@ -27,14 +32,11 @@ class DatabaseConnector:
         return self.destination_engine
     
     def upload_to_db(self, df, table_name, if_exists='replace'):
-        # Remember to edit the dataframe in this method to make sure it is uploading the correct one.
         try:
-            from data_cleaning import DataCleaning  # Move inside method to stop circular dependency between this file and data_cleaning.py
-            df_cleaned = DataCleaning().clean_store_data(df)
-            df_cleaned.to_sql(table_name, self.destination_engine, if_exists=if_exists, index=False)
+            df.to_sql(table_name, self.destination_engine, if_exists=if_exists, index=False)
             print(f"Data uploaded to {table_name} successfully.")
         except Exception as e:
-            print(f"Error uploading data to {table_name}: {e}")   
+            print(f"Error uploading data to {table_name}: {e}")
     
 if __name__ == '__main__':
     db_connector = DatabaseConnector()

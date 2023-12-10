@@ -2,3 +2,4 @@ db_creds.yaml
 sales_data_creds.yaml
 header_details.yaml
 test.py
+aws_access.yaml

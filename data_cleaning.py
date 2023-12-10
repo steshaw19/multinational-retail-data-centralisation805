@@ -32,9 +32,10 @@ class DataCleaning:
                 # Filter rows where the user ID has the desired length
                 user_data_df = user_data_df[user_data_df['user_uuid'].str.len() == 36]
 
-                # Drop any names that contain numbers but checks if the name is NULL first
-                user_data_df = user_data_df[user_data_df[['first_name', 'last_name']].notnull().all(axis=1) &
-                            user_data_df[['first_name', 'last_name']].applymap(lambda x: x.isalpha()).all(axis=1)]
+                 # Drop any names that contain numbers but check if the name is NULL first
+                name_columns = ['first_name', 'last_name']
+                user_data_df = user_data_df[user_data_df[name_columns].notnull().all(axis=1) &
+                            user_data_df[name_columns].applymap(lambda x: bool(re.match(r'^[a-zA-Z\'-]+$', str(x))))]
 
                 # Removes email address that are invalid (does not have an @ sign)
                 mask = user_data_df['email_address'].str.contains('@', na=False)
@@ -188,18 +189,49 @@ class DataCleaning:
         except Exception as e:
             print(f"Error cleaning products data: {e}")
             return None
+        
+    def clean_orders_data(self, orders_data):
+        try:
+            if orders_data is not None:
+                # Drop unwanted columns if they exist
+                columns_to_drop = ['first_name', 'last_name', '1']
+                orders_data = orders_data.drop(columns=columns_to_drop, errors='ignore')
 
+                # Sets index
+                orders_data = orders_data.rename(columns={'level_0': 'index'})
+                orders_data = orders_data.set_index('index')
+
+                # Define a regular expression pattern for a valid UUID
+                # orders_data = orders_data.rename(columns={'uuid': 'date_uuid'})
+                # uuid_pattern = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+                # uuid_columns = ['date_uuid', 'user_uuid']
+
+                # Drop rows where the length of 'user_uuid' or 'uuid' is not equal to 36
+                orders_data = orders_data[orders_data['user_uuid'].str.len() == 36]
+                orders_data = orders_data[orders_data['date_uuid'].str.len() == 36]
+
+                # Filter out rows with invalid UUIDs and renames the 'date_uuid' column to uuid like in other tables.
+                # orders_data = orders_data[orders_data[uuid_columns].str.match(uuid_pattern, na=False)]
+
+                # Drop Nan values in any column
+                orders_data = orders_data.dropna()
+
+                return orders_data
+        except Exception as e:
+            print(f"Error cleaning orders data: {e}")
+            return None
 
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
+    extractor = DataExtractor()
     # cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
     # cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
-    cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
+    # cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
     
-    # Convert product weights
-    converted_products_data = data_cleaner.convert_product_weights(products_data)
-    # Then clean the dataframe with the converted weight column
-    cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
+    # # Convert product weights
+    # converted_products_data = data_cleaner.convert_product_weights(products_data)
+    # # Then clean the dataframe with the converted weight column
+    # cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
     
     
     # try:
@@ -216,12 +248,12 @@ if __name__=='__main__':
     # except:
     #     print("Data cleaning and upload failed for PDF.")
     
-    try:
-        # Call upload_to_db method from db_connector instance
-        if cleaned_store_data is not None:
-            db_connector.upload_to_db(cleaned_store_data, 'dim_store_details')
-    except:
-        print("Data cleaning and upload failed for API Store Data.")
+    # try:
+    #     # Call upload_to_db method from db_connector instance
+    #     if cleaned_store_data is not None:
+    #         db_connector.upload_to_db(cleaned_store_data, 'dim_store_details')
+    # except:
+    #     print("Data cleaning and upload failed for API Store Data.")
 
     # try:
     #     # Call upload_to_db method from db_connector instance
@@ -230,4 +262,24 @@ if __name__=='__main__':
     # except:
     #     print("Data cleaning and upload failed for product data.")
 
+    ## Retrieves the names of all the tables in the database 
+    # all_tables = extractor.list_db_tables()
+    # print("All Tables in the Database:")
+    # print(all_tables)
+
+    # Extract orders data
+    orders_table_name = 'orders_table'
+    orders_data = extractor.read_rds_table(orders_table_name)
+    print(orders_data)
+
+    # Clean orders data
+    cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
+    print(cleaned_orders_data)
+
+    try:
+        if cleaned_orders_data is not None:
+            db_connector = DatabaseConnector()
+            db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
+    except Exception as e:
+        print(f"Data cleaning and upload failed for orders data: {e}")
 
