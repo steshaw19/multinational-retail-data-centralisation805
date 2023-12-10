@@ -92,5 +92,3 @@ number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, he
 total_stores = number_of_stores.get('number_stores', 0)
 all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores)
 
-print(f"Number of stores: {number_of_stores}")
-print("Store data:", all_store_data)
