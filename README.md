@@ -27,6 +27,8 @@ This script contains a `DatabaseConnector` class with methods to read database c
    ```bash
    pip install pandas numpy re tabula requests yaml boto3 sqlalchemy
 
+6. **Security**: Ensure that all credentials and passkeys are saved in .yaml files and not available in the main script. Add these files to a .gitignore file in your VS Studio to ensure that no credentials are uploaded to GitHub and made available to individuals who should not have access.
+
 Feel free to customize the scripts according to your specific data handling needs and adapt the methods for your use case.
 
 Please reach out for any questions or further assistance!
