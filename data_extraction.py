@@ -3,6 +3,7 @@ import tabula
 import requests
 import yaml
 import boto3
+import time
 from io import BytesIO
 from sqlalchemy import inspect
 from database_utils import DatabaseConnector
@@ -121,5 +122,6 @@ all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers,
 aws_credentials_path = 'aws_access.yaml'
 s3_address = 's3://data-handling-public/products.csv'
 products_data = DataExtractor.extract_from_s3(s3_address, aws_credentials_path)
+
 
 
