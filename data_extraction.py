@@ -1,5 +1,7 @@
 import pandas as pd
 import tabula
+import requests
+import yaml
 from sqlalchemy import inspect
 from database_utils import DatabaseConnector
 
@@ -43,6 +45,33 @@ class DataExtractor:
         except Exception as e:
             print(f"Error extracting data from PDF: {e}")
             return None
+        
+    def list_number_of_stores(self, number_of_stores_endpoint, headers):
+        try:
+            response = requests.get(number_of_stores_endpoint, headers=headers)
+            response.raise_for_status()  # Raise an exception for bad responses (4xx or 5xx)
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Error listing number of stores: {e}")
+            return None
+    
+    def retrieve_stores_data(self, store_endpoint_pattern, headers, total_stores):
+        all_stores_data = []
+
+        for store_number in range(0, total_stores):
+            store_endpoint = f"{store_endpoint_pattern}/{store_number}"
+            try:
+                response = requests.get(store_endpoint, headers=headers)
+                response.raise_for_status()
+                store_data = response.json()
+                all_stores_data.append(store_data)
+            except requests.exceptions.RequestException as e:
+                print(f"Error retrieving data for store {store_number}: {e}")
+                return None
+        all_stores_df = pd.DataFrame(all_stores_data)
+        all_stores_df = all_stores_df.set_index('index')
+        return all_stores_df
+
 
 # Create an instance of the DataExtractor class
 extractor = DataExtractor()
@@ -52,3 +81,16 @@ user_data_df = extractor.read_rds_table('legacy_users')
 
 # Provide the PDF link as an argument to the retrieve_pdf_data method
 pdf_data = extractor.retrieve_pdf_data('https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf')
+
+# API details
+number_of_stores_endpoint = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores/"
+store_endpoint_pattern = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details"
+headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
+
+# Calling the methods
+number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, headers)
+total_stores = number_of_stores.get('number_stores', 0)
+all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores)
+
+print(f"Number of stores: {number_of_stores}")
+print("Store data:", all_store_data)
