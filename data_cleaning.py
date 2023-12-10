@@ -3,6 +3,7 @@ import numpy as np
 from database_utils import DatabaseConnector
 from data_extraction import DataExtractor
 from data_extraction import pdf_data
+from data_extraction import all_store_data 
 
 # Instantiate DatabaseConnector to access its methods
 db_connector = DatabaseConnector()
@@ -20,59 +21,59 @@ extractor = DataExtractor()
 user_data_df = extractor.read_rds_table('legacy_users')
 
 class DataCleaning:
-    # def clean_user_data(self, user_data_df):
-    #     try:
-    #         if user_data_df is not None:
-    #             # Replace 'NULL' with NaN
-    #             user_data_df.replace({'NULL': np.nan}, inplace=True)
+    def clean_user_data(self, user_data_df):
+        try:
+            if user_data_df is not None:
+                # Replace 'NULL' with NaN
+                user_data_df.replace({'NULL': np.nan}, inplace=True)
 
-    #             # Drop rows with any NULL value in any column
-    #             user_data_df = user_data_df.dropna()
+                # Drop rows with any NULL value in any column
+                user_data_df = user_data_df.dropna()
 
-    #             # Filter rows where the user ID has the desired length
-    #             user_data_df = user_data_df[user_data_df['user_uuid'].str.len() == 36]
+                # Filter rows where the user ID has the desired length
+                user_data_df = user_data_df[user_data_df['user_uuid'].str.len() == 36]
 
-    #             # Drop any names that contain numbers but checks if the name is NULL first
-    #             user_data_df = user_data_df[user_data_df[['first_name', 'last_name']].notnull().all(axis=1) &
-    #                         user_data_df[['first_name', 'last_name']].applymap(lambda x: x.isalpha()).all(axis=1)]
+                # Drop any names that contain numbers but checks if the name is NULL first
+                user_data_df = user_data_df[user_data_df[['first_name', 'last_name']].notnull().all(axis=1) &
+                            user_data_df[['first_name', 'last_name']].applymap(lambda x: x.isalpha()).all(axis=1)]
 
-    #             # Removes email address that are invalid (does not have an @ sign)
-    #             mask = user_data_df['email_address'].str.contains('@', na=False)
-    #             user_data_df = user_data_df[mask]
+                # Removes email address that are invalid (does not have an @ sign)
+                mask = user_data_df['email_address'].str.contains('@', na=False)
+                user_data_df = user_data_df[mask]
 
-    #             # Convert date columns to datetime format
-    #             date_columns = ['date_of_birth', 'join_date']
-    #             user_data_df[date_columns] = user_data_df[date_columns].apply(pd.to_datetime, errors='coerce')
+                # Convert date columns to datetime format
+                date_columns = ['date_of_birth', 'join_date']
+                user_data_df[date_columns] = user_data_df[date_columns].apply(pd.to_datetime, errors='coerce')
 
-    #             # Create a boolean mask for rows with numbers in the 'country' column
-    #             no_number_mask_country = ~user_data_df['country'].str.contains(r'\d', na=False)
+                # Create a boolean mask for rows with numbers in the 'country' column
+                no_number_mask_country = ~user_data_df['country'].str.contains(r'\d', na=False)
 
-    #             # Filter the DataFrame using the boolean mask
-    #             user_data_df = user_data_df[no_number_mask_country]
+                # Filter the DataFrame using the boolean mask
+                user_data_df = user_data_df[no_number_mask_country]
 
-    #             # Create a boolean mask for rows with numbers in the 'column' column
-    #             no_number_mask_company = ~user_data_df['company'].str.contains(r'\d', na=False)
+                # Create a boolean mask for rows with numbers in the 'company' column
+                no_number_mask_company = ~user_data_df['company'].str.contains(r'\d', na=False)
 
-    #             # Filter the DataFrame using the boolean mask
-    #             user_data_df = user_data_df[no_number_mask_company]
+                # Filter the DataFrame using the boolean mask
+                user_data_df = user_data_df[no_number_mask_company]
 
-    #             # Create a boolean mask for rows with valid country codes (2 or 3 characters)
-    #             valid_country_code_mask = user_data_df['country_code'].str.len().isin([2, 3])
+                # Create a boolean mask for rows with valid country codes (2 or 3 characters)
+                valid_country_code_mask = user_data_df['country_code'].str.len().isin([2, 3])
 
-    #             # Filter the DataFrame using the boolean mask
-    #             user_data_df = user_data_df[valid_country_code_mask]
+                # Filter the DataFrame using the boolean mask
+                user_data_df = user_data_df[valid_country_code_mask]
 
-    #             # Create a boolean mask for rows with phone numbers containing letters (excluding 'ext')
-    #             # valid_phone_mask = ~user_data_df['phone_number'].str.contains(r'[^0-9extEXT()+.-'']', na=False)
+                # Create a boolean mask for rows with phone numbers containing letters (excluding 'ext')
+                # valid_phone_mask = ~user_data_df['phone_number'].str.contains(r'[^0-9extEXT()+.-'']', na=False)
 
-    #             # Filter the DataFrame using the boolean mask
-    #             # user_data_df = user_data_df[valid_phone_mask]
+                # Filter the DataFrame using the boolean mask
+                # user_data_df = user_data_df[valid_phone_mask]
 
-    #         return user_data_df
+            return user_data_df
         
-    #     except Exception as e:
-    #         print(f"Error cleaning user data: {e}")
-    #         return None
+        except Exception as e:
+            print(f"Error cleaning user data: {e}")
+            return None
     
     def clean_pdf_data(self, pdf_data):
         try:
@@ -99,12 +100,53 @@ class DataCleaning:
         except Exception as e:
             print(f"Error cleaning card details data: {e}")
             return None
+        
+    def clean_store_data(self, all_store_data):
+        try:
+            # Replace 'NULL' (case insensitive) with NaN
+            all_store_data.replace({'NULL': np.nan, 'null': np.nan, 'NULL ': np.nan, ' NULL': np.nan}, inplace=True)
 
+            # Drop the 'longitude' column as all data is none.
+            all_store_data = all_store_data.drop('lat', axis=1)
+
+            # Convert 'staff_numbers' column to numeric, coerce non-numeric values to NaN
+            all_store_data['staff_numbers'] = pd.to_numeric(all_store_data['staff_numbers'], errors='coerce')
+
+            # Convert 'opening_date' column to datetime
+            all_store_data['opening_date'] = pd.to_datetime(all_store_data['opening_date'], errors='coerce')
+            
+            # Specify columns where NaN values should be kept
+            columns_to_keep_nan = ['latitude']
+
+            # Drop rows with NaN values from all columns except 'latitude'
+            # Keep rows where 'store_type' is 'web portal' or has at least two non-NaN values
+            all_store_data = all_store_data[(all_store_data['store_type'] == 'web portal') | (all_store_data.notna().sum(axis=1) >= 2)]
+            all_store_data = all_store_data.dropna(subset=all_store_data.columns.difference(columns_to_keep_nan))
+
+            # Create a boolean mask for rows with valid country codes (2 or 3 characters)
+            valid_country_code_mask = all_store_data['country_code'].str.len().isin([2, 3])
+
+            # Filter the DataFrame using the boolean mask
+            all_store_data = all_store_data[valid_country_code_mask]
+
+            # Create a boolean mask for rows with numbers in the 'continent' column
+            no_number_mask_continent = ~all_store_data['continent'].str.contains(r'\d', na=False)
+
+            # Filter the DataFrame using the boolean mask
+            all_store_data = all_store_data[no_number_mask_continent]
+        
+            return all_store_data
+                
+        except Exception as e:
+            print(f"Error cleaning card details data: {e}")
+            return None
 
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
     cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
     cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
+    cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
+    print(cleaned_store_data)
     
     try:
        # Call upload_to_db method from db_connector instance
@@ -119,3 +161,10 @@ if __name__=='__main__':
             db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
     except:
         print("Data cleaning and upload failed for PDF.")
+    
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_store_data is not None:
+            db_connector.upload_to_db(cleaned_store_data, 'dim_store_details')
+    except:
+        print("Data cleaning and upload failed for API Store Data.")
