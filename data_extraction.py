@@ -2,6 +2,8 @@ import pandas as pd
 import tabula
 import requests
 import yaml
+import boto3
+from io import BytesIO
 from sqlalchemy import inspect
 from database_utils import DatabaseConnector
 
@@ -71,6 +73,30 @@ class DataExtractor:
         all_stores_df = pd.DataFrame(all_stores_data)
         all_stores_df = all_stores_df.set_index('index')
         return all_stores_df
+    
+    def extract_from_s3(s3_address, aws_credentials_path='aws_access.yaml'):
+        # Read AWS credentials from YAML file
+        with open(aws_credentials_path, 'r') as file:
+            aws_credentials = yaml.safe_load(file)
+
+        # Extract credentials from the YAML file
+        aws_access_key_id = aws_credentials['aws_access_key_id']
+        aws_secret_access_key = aws_credentials['aws_secret_access_key']
+
+        # Extract bucket and key from S3 address
+        bucket_name, key = s3_address.split('s3://')[1].split('/', 1)
+
+        # Create an S3 client
+        s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
+        # Download the file from S3
+        response = s3.get_object(Bucket=bucket_name, Key=key)
+        content = response['Body'].read()
+
+        # Convert the content to a DataFrame
+        product_details_data = pd.read_csv(BytesIO(content))
+        product_details_data = product_details_data.set_index(product_details_data.columns[0])
+        return product_details_data
 
 
 # Create an instance of the DataExtractor class
@@ -91,4 +117,9 @@ headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
 number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, headers)
 total_stores = number_of_stores.get('number_stores', 0)
 all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores)
+
+aws_credentials_path = 'aws_access.yaml'
+s3_address = 's3://data-handling-public/products.csv'
+products_data = DataExtractor.extract_from_s3(s3_address, aws_credentials_path)
+
 
