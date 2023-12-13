@@ -2,6 +2,20 @@ import yaml
 from sqlalchemy import create_engine
 
 class DatabaseConnector:
+    """
+    A utility class for handling database connections and data uploads.
+
+    Attributes:
+    - source_engine: SQLAlchemy engine for the source database.
+    - destination_engine: SQLAlchemy engine for the destination database.
+
+    Methods:
+    - read_source_db_creds(file_path='db_creds.yaml'): Read source database credentials from a YAML file.
+    - read_destination_db_creds(file_path='sales_data_creds.yaml'): Read destination database credentials from a YAML file.
+    - init_source_db_engine(credentials=None): Initialize the source database engine.
+    - init_destination_db_engine(credentials=None): Initialize the destination database engine.
+    - upload_to_db(df: DataFrame, table_name: str, if_exists: str = 'replace'): Upload DataFrame to the destination database.
+    """
     def __init__(self):
         # Initialize both source and destination engines in the constructor
         self.source_engine = self.init_source_db_engine()

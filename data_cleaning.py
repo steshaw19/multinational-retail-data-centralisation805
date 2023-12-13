@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from database_utils import DatabaseConnector
-from data_extraction import DataExtractor, all_store_data, products_data  
+from data_extraction import DataExtractor, all_store_data, date_details_data, products_data  
 
 # Instantiate DatabaseConnector to access its methods
 db_connector = DatabaseConnector()
@@ -20,6 +20,21 @@ extractor = DataExtractor()
 user_data_df = extractor.read_rds_table('legacy_users')
 
 class DataCleaning:
+    """
+    A class for cleaning various types of data.
+
+    Attributes:
+    - db_connector: An instance of the DatabaseConnector class.
+
+    Methods:
+    - clean_user_data(user_data_df: DataFrame): Clean user data.
+    - clean_pdf_data(pdf_data: DataFrame): Clean PDF data.
+    - clean_store_data(all_store_data: DataFrame): Clean store data.
+    - convert_product_weights(products_data: DataFrame): Convert product weights to kilograms.
+    - clean_products_data(products_data: DataFrame): Clean product data.
+    - clean_orders_data(orders_data: DataFrame): Clean orders data.
+    - clean_date_details_data(date_details_data): Clean date details data.
+    """
     def clean_user_data(self, user_data_df):
         try:
             if user_data_df is not None:
@@ -220,6 +235,27 @@ class DataCleaning:
         except Exception as e:
             print(f"Error cleaning orders data: {e}")
             return None
+        
+    # Function to clean date details data
+    def clean_date_details_data(date_details_data):
+        try:
+            # Convert JSON to DataFrame
+            date_details_data_df = pd.DataFrame(date_details_data)
+
+            # Set the index to default (integer index)
+            date_details_data_df.reset_index(drop=True, inplace=True)
+
+            # Convert the 'timestamp' column to datetime type
+            date_details_data_df['timestamp'] = pd.to_datetime(date_details_data_df['timestamp'], errors='coerce')
+
+            # Remove rows with null values
+            date_details_data_df = date_details_data_df.dropna()
+
+            return date_details_data_df
+    
+        except Exception as e:
+            print(f"Error cleaning date details data: {e}")
+            return None
 
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
@@ -267,19 +303,29 @@ if __name__=='__main__':
     # print("All Tables in the Database:")
     # print(all_tables)
 
-    # Extract orders data
-    orders_table_name = 'orders_table'
-    orders_data = extractor.read_rds_table(orders_table_name)
-    print(orders_data)
+    # # Extract orders data
+    # orders_table_name = 'orders_table'
+    # orders_data = extractor.read_rds_table(orders_table_name)
+    # print(orders_data)
 
-    # Clean orders data
-    cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
-    print(cleaned_orders_data)
+    # # Clean orders data
+    # cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
+    # print(cleaned_orders_data)
+
+    # try:
+    #     if cleaned_orders_data is not None:
+    #         db_connector = DatabaseConnector()
+    #         db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
+    # except Exception as e:
+    #     print(f"Data cleaning and upload failed for orders data: {e}")
+
+    # Clean date_details order data
+    cleaned_date_details_data = data_cleaner.clean_date_details_data(date_details_data)
+    print(cleaned_date_details_data)
 
     try:
-        if cleaned_orders_data is not None:
+        if cleaned_date_details_data is not None:
             db_connector = DatabaseConnector()
-            db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
+            db_connector.upload_to_db(cleaned_date_details_data, 'dim_date_times')
     except Exception as e:
-        print(f"Data cleaning and upload failed for orders data: {e}")
-
+        print(f"Data cleaning and upload failed for date_details data: {e}")

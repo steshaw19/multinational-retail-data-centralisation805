@@ -11,6 +11,23 @@ from sqlalchemy import inspect
 
 
 class DataExtractor:
+    """
+    A class for data extraction from various sources.
+
+    Attributes:
+    - db_connector: An instance of the DatabaseConnector class.
+    - credentials: Database credentials.
+    - source_engine: SQLAlchemy engine for the source database.
+
+    Methods:
+    - read_rds_table(table_name: str): Read data from an RDS database table.
+    - list_db_tables(): List all tables in the source database.
+    - retrieve_pdf_data(pdf_link: str): Retrieve tables from a PDF document.
+    - list_number_of_stores(number_of_stores_endpoint: str, headers: dict): List the number of stores via an API.
+    - retrieve_stores_data(store_endpoint_pattern: str, headers: dict, total_stores: int): Retrieve store data via an API.
+    - extract_from_s3(s3_address: str, aws_credentials_path: str = 'aws_access.yaml'): Extract data from an S3 bucket.
+    - download_s3_data(s3_url: str): Download JSON data from S3.
+    """
     def __init__(self):
         # Instantiate DatabaseConnector to access its methods
         self.db_connector = DatabaseConnector()
