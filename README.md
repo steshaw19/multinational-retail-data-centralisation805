@@ -35,6 +35,10 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 
 6. **Security**: Ensure that all credentials and passkeys are saved in .yaml files and not available in the main script. Add these files to a .gitignore file in your VS Studio to ensure that no credentials are uploaded to GitHub and made available to individuals who should not have access.
 
+7. **Accessing Docstrings Information**: You can access docstrings directly within Python using the `help` function. For example, to get information about a class or function, open a Python shell and execute: 
+   ```python
+   help(class_or_function_name)
+   ```
 ## File Structure
 - `database_utils.py`: Database connection utility class.
 - `data_extraction.py`: Data extraction and API interaction class.
