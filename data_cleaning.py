@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from database_utils import DatabaseConnector
-from data_extraction import DataExtractor, all_store_data, date_details_data, products_data  
+from data_extraction import DataExtractor, all_store_data, date_details_data, pdf_data, products_data  
 
 # Instantiate DatabaseConnector to access its methods
 db_connector = DatabaseConnector()
@@ -237,7 +237,7 @@ class DataCleaning:
             return None
         
     # Function to clean date details data
-    def clean_date_details_data(date_details_data):
+    def clean_date_details_data(self, date_details_data):
         try:
             # Convert JSON to DataFrame
             date_details_data_df = pd.DataFrame(date_details_data)
@@ -260,64 +260,64 @@ class DataCleaning:
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
     extractor = DataExtractor()
-    # cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
-    # cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
-    # cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
+    cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
+    cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
+    cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
     
-    # # Convert product weights
-    # converted_products_data = data_cleaner.convert_product_weights(products_data)
-    # # Then clean the dataframe with the converted weight column
-    # cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
+    # Convert product weights
+    converted_products_data = data_cleaner.convert_product_weights(products_data)
+    # Then clean the dataframe with the converted weight column
+    cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
     
     
-    # try:
-    #    # Call upload_to_db method from db_connector instance
-    #    if cleaned_user_data is not None:
-    #        db_connector.upload_to_db(cleaned_user_data, 'dim_users')
-    # except:
-    #    print("Data cleaning and upload failed for User Data.")
+    try:
+       # Call upload_to_db method from db_connector instance
+       if cleaned_user_data is not None:
+           db_connector.upload_to_db(cleaned_user_data, 'dim_users')
+    except:
+       print("Data cleaning and upload failed for User Data.")
 
-    # try:
-    #     # Call upload_to_db method from db_connector instance
-    #     if cleaned_pdf_data is not None:
-    #         db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
-    # except:
-    #     print("Data cleaning and upload failed for PDF.")
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_pdf_data is not None:
+            db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
+    except:
+        print("Data cleaning and upload failed for PDF.")
     
-    # try:
-    #     # Call upload_to_db method from db_connector instance
-    #     if cleaned_store_data is not None:
-    #         db_connector.upload_to_db(cleaned_store_data, 'dim_store_details')
-    # except:
-    #     print("Data cleaning and upload failed for API Store Data.")
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_store_data is not None:
+            db_connector.upload_to_db(cleaned_store_data, 'dim_store_details')
+    except:
+        print("Data cleaning and upload failed for API Store Data.")
 
-    # try:
-    #     # Call upload_to_db method from db_connector instance
-    #     if cleaned_product_data is not None:
-    #         db_connector.upload_to_db(cleaned_product_data, 'dim_products')
-    # except:
-    #     print("Data cleaning and upload failed for product data.")
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_product_data is not None:
+            db_connector.upload_to_db(cleaned_product_data, 'dim_products')
+    except:
+        print("Data cleaning and upload failed for product data.")
 
-    ## Retrieves the names of all the tables in the database 
-    # all_tables = extractor.list_db_tables()
-    # print("All Tables in the Database:")
-    # print(all_tables)
+    # Retrieves the names of all the tables in the database 
+    all_tables = extractor.list_db_tables()
+    print("All Tables in the Database:")
+    print(all_tables)
 
-    # # Extract orders data
-    # orders_table_name = 'orders_table'
-    # orders_data = extractor.read_rds_table(orders_table_name)
-    # print(orders_data)
+    # Extract orders data
+    orders_table_name = 'orders_table'
+    orders_data = extractor.read_rds_table(orders_table_name)
+    print(orders_data)
 
-    # # Clean orders data
-    # cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
-    # print(cleaned_orders_data)
+    # Clean orders data
+    cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
+    print(cleaned_orders_data)
 
-    # try:
-    #     if cleaned_orders_data is not None:
-    #         db_connector = DatabaseConnector()
-    #         db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
-    # except Exception as e:
-    #     print(f"Data cleaning and upload failed for orders data: {e}")
+    try:
+        if cleaned_orders_data is not None:
+            db_connector = DatabaseConnector()
+            db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
+    except Exception as e:
+        print(f"Data cleaning and upload failed for orders data: {e}")
 
     # Clean date_details order data
     cleaned_date_details_data = data_cleaner.clean_date_details_data(date_details_data)

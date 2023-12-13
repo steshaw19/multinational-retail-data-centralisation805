@@ -31,9 +31,9 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 
 5. **Dependencies**: Make sure you have the required Python libraries installed. You can install them using the following or by referring to `requirements.txt`:
    ```bash
-   pip install pandas numpy re tabula requests yaml boto3 sqlalchemy
+   pip install pandas numpy tabula requests pyyaml boto3 sqlalchemy
 
-6. **Security**: Ensure that all credentials and passkeys are saved in .yaml files and not available in the main script. Add these files to a .gitignore file in your VS Studio to ensure that no credentials are uploaded to GitHub and made available to individuals who should not have access.
+6. **Security**: Ensure that all credentials and passkeys are saved in .yaml files and not available in the main script. Add these files to a .gitignore file in VS Studio (or similar software) to ensure that no credentials are uploaded to GitHub and made available to individuals who should not have access.
 
 7. **Accessing Docstrings Information**: You can access docstrings directly within Python using the `help` function. For example, to get information about a class or function, open a Python shell and execute: 
    ```python
