@@ -13,8 +13,8 @@ UPDATE dim_products
     SET weight_class =
         CASE
             WHEN weight_kg < 2 THEN 'Light'
-            WHEN weight_kg >= 2 AND weight < 40 THEN 'Mid_Sized'
-            WHEN weight_kg >= 40 AND weight < 140 THEN 'Heavy'
+            WHEN weight_kg >= 2 AND weight_kg < 40 THEN 'Mid_Sized'
+            WHEN weight_kg >= 40 AND weight_kg < 140 THEN 'Heavy'
             WHEN weight_kg >= 140 THEN 'Truck_Required'
             ELSE NULL
         END;
