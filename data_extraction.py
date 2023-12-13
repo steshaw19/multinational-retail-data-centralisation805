@@ -1,12 +1,14 @@
-import pandas as pd
-import tabula
-import requests
-import yaml
 import boto3
+import json
+import pandas as pd
+import requests
+import tabula
 import time
+import yaml
+from database_utils import DatabaseConnector
 from io import BytesIO
 from sqlalchemy import inspect
-from database_utils import DatabaseConnector
+
 
 class DataExtractor:
     def __init__(self):
@@ -98,6 +100,12 @@ class DataExtractor:
         product_details_data = pd.read_csv(BytesIO(content))
         product_details_data = product_details_data.set_index(product_details_data.columns[0])
         return product_details_data
+    
+    # Function to download JSON data from S3
+    def download_s3_data(self, s3_url):
+        response = requests.get(s3_url)
+        date_data = json.loads(response.text)
+        return date_data
 
 
 # Create an instance of the DataExtractor class
@@ -122,6 +130,11 @@ all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers,
 aws_credentials_path = 'aws_access.yaml'
 s3_address = 's3://data-handling-public/products.csv'
 products_data = DataExtractor.extract_from_s3(s3_address, aws_credentials_path)
+
+# Download data from S3
+s3_url = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
+date_details_data = extractor.download_s3_data(s3_url)
+
 
 
 
