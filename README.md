@@ -17,7 +17,7 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 3. `data_cleaning.py`: Implements a `DataCleaning` class with methods for cleaning user data, PDF data, store data, product data, orders data, and date details data.
 
 ## Installation Instructions
-1. Clone the repository: `git clone <repository_url>`
+1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
 2. Install the required Python packages: `pip install -r requirements.txt`
 
 ## Usage Instructions
