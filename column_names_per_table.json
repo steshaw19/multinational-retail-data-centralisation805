@@ -1,0 +1,237 @@
+[
+  {
+    "table_name": "dim_date_times",
+    "column_name": "timestamp",
+    "data_type": "timestamp without time zone"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "uuid",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "still_available",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "user_uuid",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "weight_kg",
+    "data_type": "double precision"
+  },
+  {
+    "table_name": "dim_date_times",
+    "column_name": "date_uuid",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "dim_card_details",
+    "column_name": "date_payment_confirmed",
+    "data_type": "date"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "product_price",
+    "data_type": "double precision"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "date_uuid",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "user_uuid",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "staff_numbers",
+    "data_type": "double precision"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "opening_date",
+    "data_type": "timestamp without time zone"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "date_of_birth",
+    "data_type": "date"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "join_date",
+    "data_type": "date"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "date_added",
+    "data_type": "date"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "product_quantity",
+    "data_type": "smallint"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "card_number",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_card_details",
+    "column_name": "card_number",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "product_code",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_date_times",
+    "column_name": "month",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_date_times",
+    "column_name": "year",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_date_times",
+    "column_name": "day",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_date_times",
+    "column_name": "time_period",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "address",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "longitude",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "locality",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "store_code",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "store_type",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "latitude",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "country_code",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_store_details",
+    "column_name": "continent",
+    "data_type": "text"
+  },
+  {
+    "table_name": "orders_table",
+    "column_name": "store_code",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_card_details",
+    "column_name": "expiry_date",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_card_details",
+    "column_name": "card_provider",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "first_name",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "last_name",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "company",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "email_address",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "address",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "country",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "country_code",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_users",
+    "column_name": "phone_number",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "product_name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "category",
+    "data_type": "text"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "EAN",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "product_code",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "dim_products",
+    "column_name": "weight_class",
+    "data_type": "character varying"
+  }
+]

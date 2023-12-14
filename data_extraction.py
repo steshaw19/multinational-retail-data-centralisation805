@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import requests
 import tabula
+from tabula.io import read_pdf
 import time
 import yaml
 from database_utils import DatabaseConnector

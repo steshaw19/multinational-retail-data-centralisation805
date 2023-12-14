@@ -21,6 +21,7 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 ## Installation Instructions
 1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
 2. Install the required Python packages: `pip install -r requirements.txt`
+3. Install required SQL packages. This project used pgAdmin 4, SQLTools in VS Code, and SQLTools PostgreSQL/Cockroach Driver in VS Code. Full information on installation can be found in `sql_installation_requirements.sql`
 
 ## Usage Instructions
 1. **Database Credentials**: Ensure that the credentials for the source and destination databases are correctly specified in the `db_creds.yaml` and `sales_data_creds.yaml` files.
