@@ -8,13 +8,15 @@
 - [License Information](#license-information)
 
 ## Description
-This project focuses on data extraction, cleaning, and uploading to a database using Python. The data involves user information, PDF data, store details from an API, and product details from CSV files stored in an S3 bucket on AWS.
+This project focuses on data extraction, cleaning, and uploading to a database using Python. The data involves user information, PDF data, store details from an API, and product details from CSV files stored in an S3 bucket on AWS. SQL was used to develop a star-based database scheme ensuring correct data types and primary and foreign keys. SQL was then used to query the data and present an analysis for a demo business situation. 
 
 1. `database_utils.py`: Defines a `DatabaseConnector` class for handling database connections, reading credentials, initializing database engines, and uploading data to a PostgreSQL database.
 
 2. `data_extraction.py`: Contains a `DataExtractor` class for reading data from an RDS database, extracting PDF data, making API calls, and downloading data from an S3 bucket.
 
 3. `data_cleaning.py`: Implements a `DataCleaning` class with methods for cleaning user data, PDF data, store data, product data, orders data, and date details data.
+
+4. `querying_the_data`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text. This information is organised by task and the original SQL code can be found at `querying_the_data.sql`. 
 
 ## Installation Instructions
 1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
