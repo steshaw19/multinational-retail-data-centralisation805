@@ -2,22 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from database_utils import DatabaseConnector
-from data_extraction import DataExtractor, all_store_data, date_details_data, pdf_data, products_data  
-
-# Instantiate DatabaseConnector to access its methods
-db_connector = DatabaseConnector()
-
-# Get credentials
-destination_credentials = db_connector.read_destination_db_creds()
-
-# Initialize the database engine
-destination_engine = db_connector.init_destination_db_engine(destination_credentials)
-
-# Create an instance of DataExtractor
-extractor = DataExtractor()
-
-# Read data from the RDS table (example table name: 'legacy_users')
-user_data_df = extractor.read_rds_table('legacy_users')
+from data_extraction import DataExtractor, all_store_data, date_details_data, pdf_data, products_data, user_data_df  
 
 class DataCleaning:
     """
@@ -35,6 +20,13 @@ class DataCleaning:
     - clean_orders_data(orders_data: DataFrame): Clean orders data.
     - clean_date_details_data(date_details_data): Clean date details data.
     """
+    def __init__(self):
+        self.db_connector = DatabaseConnector()
+        self.destination_credentials = self.db_connector.read_destination_db_creds()
+        self.destination_engine = self.db_connector.init_destination_db_engine(self.destination_credentials)
+        self.extractor = DataExtractor()
+
+    # Method for cleaning user data. Commented out code can be added as needed.
     def clean_user_data(self, user_data_df):
         try:
             if user_data_df is not None:
@@ -89,7 +81,8 @@ class DataCleaning:
         except Exception as e:
             print(f"Error cleaning user data: {e}")
             return None
-    
+        
+    # Method for cleaning card details from PDF data. Commented code can be added as needed.
     def clean_pdf_data(self, pdf_data):
         try:
             if pdf_data is not None:
@@ -116,6 +109,7 @@ class DataCleaning:
             print(f"Error cleaning card details data: {e}")
             return None
         
+    # Method for cleaning store details data. Commented out code can be added as needed.    
     def clean_store_data(self, all_store_data):
         try:
             # Replace 'NULL' (case insensitive) with NaN
@@ -155,7 +149,8 @@ class DataCleaning:
         except Exception as e:
             print(f"Error cleaning store details data: {e}")
             return None
-    
+        
+    # Method for converting product weight data before cleaning full database table.
     def convert_product_weights(self, products_data):
         def convert_to_kg(weight_str):
             try:
@@ -182,6 +177,7 @@ class DataCleaning:
 
         return products_data
     
+    # Method for cleaning product data.
     def clean_products_data(self, products_data):
         try:
             # Replace 'NULL' (case insensitive) with NaN
@@ -205,6 +201,7 @@ class DataCleaning:
             print(f"Error cleaning products data: {e}")
             return None
         
+    # Method for cleaning order data.    
     def clean_orders_data(self, orders_data):
         try:
             if orders_data is not None:
@@ -236,7 +233,7 @@ class DataCleaning:
             print(f"Error cleaning orders data: {e}")
             return None
         
-    # Function to clean date details data
+    # Method to clean date details data (time when orders have been placed in the various stores)
     def clean_date_details_data(self, date_details_data):
         try:
             # Convert JSON to DataFrame
@@ -260,30 +257,41 @@ class DataCleaning:
 if __name__=='__main__': 
     data_cleaner = DataCleaning()
     extractor = DataExtractor()
-    # cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
-    # cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
-    cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
-    
-    # Convert product weights
-    #converted_products_data = data_cleaner.convert_product_weights(products_data)
-    # Then clean the dataframe with the converted weight column
-    #cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
-    
-    
-    # try:
-    #    # Call upload_to_db method from db_connector instance
-    #    if cleaned_user_data is not None:
-    #        db_connector.upload_to_db(cleaned_user_data, 'dim_users')
-    # except:
-    #    print("Data cleaning and upload failed for User Data.")
+    db_connector = DatabaseConnector()
 
-    # try:
-    #     # Call upload_to_db method from db_connector instance
-    #     if cleaned_pdf_data is not None:
-    #         db_connector = DatabaseConnector()
-    #         db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
-    # except:
-    #     print("Data cleaning and upload failed for card details PDF.")
+    # Calling methods to clean extracted data.
+    cleaned_user_data = data_cleaner.clean_user_data(user_data_df)
+    cleaned_pdf_data = data_cleaner.clean_pdf_data(pdf_data)
+    cleaned_store_data = data_cleaner.clean_store_data(all_store_data)
+    # Convert product weights
+    converted_products_data = data_cleaner.convert_product_weights(products_data)
+    # Then clean the dataframe with the converted weight column
+    cleaned_product_data = data_cleaner.clean_products_data(converted_products_data)
+    # Retrieves the names of all the tables in the database 
+    all_tables = extractor.list_db_tables()
+    print("All Tables in the Database:")
+    print(all_tables)
+    # Extract orders data
+    orders_table_name = 'orders_table'
+    orders_data = extractor.read_rds_table(orders_table_name)
+    cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
+    cleaned_date_details_data = data_cleaner.clean_date_details_data(date_details_data)
+
+    # Sends cleaned data to database.    
+    try:
+       # Call upload_to_db method from db_connector instance
+       if cleaned_user_data is not None:
+           db_connector.upload_to_db(cleaned_user_data, 'dim_users')
+    except:
+       print("Data cleaning and upload failed for User Data.")
+
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_pdf_data is not None:
+            db_connector = DatabaseConnector()
+            db_connector.upload_to_db(cleaned_pdf_data, 'dim_card_details')
+    except:
+        print("Data cleaning and upload failed for card details PDF.")
     
     try:
         # Call upload_to_db method from db_connector instance
@@ -292,37 +300,19 @@ if __name__=='__main__':
     except:
         print("Data cleaning and upload failed for API Store Data.")
 
-    # try:
-    #     # Call upload_to_db method from db_connector instance
-    #     if cleaned_product_data is not None:
-    #         db_connector.upload_to_db(cleaned_product_data, 'dim_products')
-    # except:
-    #     print("Data cleaning and upload failed for product data.")
+    try:
+        # Call upload_to_db method from db_connector instance
+        if cleaned_product_data is not None:
+            db_connector.upload_to_db(cleaned_product_data, 'dim_products')
+    except:
+        print("Data cleaning and upload failed for product data.")
 
-    # # Retrieves the names of all the tables in the database 
-    # all_tables = extractor.list_db_tables()
-    # print("All Tables in the Database:")
-    # print(all_tables)
-
-    # # Extract orders data
-    # orders_table_name = 'orders_table'
-    # orders_data = extractor.read_rds_table(orders_table_name)
-    # print(orders_data)
-
-    # # Clean orders data
-    # cleaned_orders_data = data_cleaner.clean_orders_data(orders_data)
-    # print(cleaned_orders_data)
-
-    # try:
-    #     if cleaned_orders_data is not None:
-    #         db_connector = DatabaseConnector()
-    #         db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
-    # except Exception as e:
-    #     print(f"Data cleaning and upload failed for orders data: {e}")
-
-    # Clean date_details order data
-    cleaned_date_details_data = data_cleaner.clean_date_details_data(date_details_data)
-
+    try:
+        if cleaned_orders_data is not None:
+            db_connector = DatabaseConnector()
+            db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
+    except Exception as e:
+        print(f"Data cleaning and upload failed for orders data: {e}")
 
     try:
         if cleaned_date_details_data is not None:

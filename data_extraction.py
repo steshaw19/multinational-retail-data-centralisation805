@@ -37,6 +37,7 @@ class DataExtractor:
         # Initialize the database engine
         self.source_engine = self.db_connector.init_source_db_engine(self.credentials)
 
+    # Reads source database table to retrieve column names.
     def read_rds_table(self, table_name):
         try:
             query = f"SELECT * FROM {table_name}"
@@ -45,7 +46,8 @@ class DataExtractor:
         except Exception as e:
             print(f"Error reading table {table_name}: {e}")
             return None
-
+        
+    # Lists tables in source database.
     def list_db_tables(self):
         try:
             # Use the inspector to get table names
@@ -55,7 +57,8 @@ class DataExtractor:
         except Exception as e:
             print(f"Error listing tables: {e}")
             return None
-        
+    
+    # Extracts card details from a PDF file.
     def retrieve_pdf_data(self, pdf_link):
         # Use tabula to extract tables from the PDF
         try:
@@ -68,7 +71,8 @@ class DataExtractor:
         except Exception as e:
             print(f"Error extracting data from PDF: {e}")
             return None
-        
+    
+    # Gets the number of stores from API
     def list_number_of_stores(self, number_of_stores_endpoint, headers):
         try:
             response = requests.get(number_of_stores_endpoint, headers=headers)
@@ -78,6 +82,7 @@ class DataExtractor:
             print(f"Error listing number of stores: {e}")
             return None
     
+    # Extracts all store data from API for the number of stores retrieved from previous method
     def retrieve_stores_data(self, store_endpoint_pattern, headers, total_stores):
         all_stores_data = []
 
@@ -95,6 +100,7 @@ class DataExtractor:
         all_stores_df = all_stores_df.set_index('index')
         return all_stores_df
     
+    # Extracts data from AWS S3 Bucket
     def extract_from_s3(s3_address, aws_credentials_path='aws_access.yaml'):
         # Read AWS credentials from YAML file
         with open(aws_credentials_path, 'r') as file:
@@ -119,7 +125,7 @@ class DataExtractor:
         product_details_data = product_details_data.set_index(product_details_data.columns[0])
         return product_details_data
     
-    # Function to download JSON data from S3
+    # Extracts JSON data from S3 Bucket
     def download_s3_data(self, s3_url):
         response = requests.get(s3_url)
         date_data = json.loads(response.text)
@@ -145,6 +151,7 @@ number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, he
 total_stores = number_of_stores.get('number_stores', 0)
 all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores)
 
+# AWS credentials
 aws_credentials_path = 'aws_access.yaml'
 s3_address = 's3://data-handling-public/products.csv'
 products_data = DataExtractor.extract_from_s3(s3_address, aws_credentials_path)
