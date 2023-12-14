@@ -145,3 +145,53 @@ ORDER BY
 ```
 
 Returns:
+
+## Task 9
+Sales would like the get an accurate metric for how quickly the company is making sales.
+
+Determine the average time taken between each sale grouped by year, the query should return the following information:
+
+| year | actual_time_taken                                       |
+|------|---------------------------------------------------------|
+| 2013 | "hours": 2, "minutes": 17, "seconds": 12, "milliseconds":... |
+| 1993 | "hours": 2, "minutes": 15, "seconds": 35, "milliseconds":... |
+| 2002 | "hours": 2, "minutes": 13, "seconds": 50, "milliseconds":... |
+| 2022 | "hours": 2, "minutes": 13, "seconds": 6,  "milliseconds":... |
+| 2008 | "hours": 2, "minutes": 13, "seconds": 2,  "milliseconds":... |
+
+
+```sql
+WITH date_times_cte AS (
+    SELECT
+        year,
+        year || '-' || LPAD(month::TEXT, 2, '0') || '-' || LPAD(day::TEXT, 2, '0') || ' ' || timestamp AS complete_time
+    FROM
+        dim_date_times
+)
+
+SELECT
+    year,
+    AVG(time_difference) AS average_time_difference_per_year
+FROM (
+    SELECT
+        year,
+        complete_time::timestamp,
+        LEAD(complete_time::timestamp) OVER (ORDER BY complete_time::timestamp) AS next_complete_time,
+        LEAD(complete_time::timestamp) OVER (ORDER BY complete_time::timestamp) - complete_time::timestamp AS time_difference
+    FROM date_times_cte
+) AS subquery
+GROUP BY year
+ORDER BY average_time_difference_per_year DESC
+LIMIT 5;
+```
+Returns:
+
+| year | average_time_difference_per_year                                   |
+|------|---------------------------------------------------------------------|
+| 2013 | {"hours":2,"minutes":17,"seconds":15,"milliseconds":655.442}     |
+| 1993 | {"hours":2,"minutes":15,"seconds":40,"milliseconds":129.515}    |
+| 2002 | {"hours":2,"minutes":13,"seconds":49,"milliseconds":478.228}    |
+| 2008 | {"hours":2,"minutes":13,"seconds":3,"milliseconds":532.442}     |
+| 2022 | {"hours":2,"minutes":13,"seconds":2,"milliseconds":3.698}       |
+
+This query began by combining the time data (month, day, year, timestamp) into one column. It then used the `LEAD` function to create a new column with the next timestamp alongside the previous one. With this, a time difference could be found between values. The query then created an average_time_difference column and grouped the data by year and ordered by the average_time_difference. The data were limited to 5 values as was the case with the example.

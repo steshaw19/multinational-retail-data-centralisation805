@@ -50,21 +50,27 @@ ORDER BY
 SELECT * FROM dim_date_times;
 
 -- Task 9
-WITH sale_time_difference AS (
-  SELECT
-    EXTRACT(YEAR FROM actual_time_taken) AS year,
-    actual_time_taken - LEAD(actual_time_taken) OVER (ORDER BY actual_time_taken) AS time_diff
-  FROM
-    your_sales_table -- Replace with the actual name of your sales table
+
+WITH date_times_cte AS (
+    SELECT
+        year,
+        year || '-' || LPAD(month::TEXT, 2, '0') || '-' || LPAD(day::TEXT, 2, '0') || ' ' || timestamp AS complete_time
+    FROM
+        dim_date_times
 )
+
 SELECT
-  year,
-  AVG(EXTRACT(EPOCH FROM time_diff)::INTERVAL) AS average_time_taken
-FROM
-  SalesCTE
-WHERE
-  time_diff IS NOT NULL
-GROUP BY
-  year
-ORDER BY
-  year;
+    year,
+    AVG(time_difference) AS average_time_difference_per_year
+FROM (
+    SELECT
+        year,
+        complete_time::timestamp,
+        LEAD(complete_time::timestamp) OVER (ORDER BY complete_time::timestamp) AS next_complete_time,
+        LEAD(complete_time::timestamp) OVER (ORDER BY complete_time::timestamp) - complete_time::timestamp AS time_difference
+    FROM date_times_cte
+) AS subquery
+GROUP BY year
+ORDER BY average_time_difference_per_year DESC
+LIMIT 5;
+

@@ -1,5 +1,7 @@
 -- Update data types in dim_date_times table
 
+SELECT * FROM dim_date_times;
+
 ALTER TABLE dim_date_times
     ALTER COLUMN month TYPE VARCHAR(2),
     ALTER COLUMN year TYPE VARCHAR(4),
