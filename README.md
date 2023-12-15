@@ -46,6 +46,14 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 - `database_utils.py`: Database connection utility class.
 - `data_extraction.py`: Data extraction and API interaction class.
 - `data_cleaning.py`: Data cleaning and database upload class.
+- `querying_the_data.md`: Analysis of database using SQL.
+- `querying_the_data.sql`: Working document of SQL query code.
+- `dim_card_details_corrected_data_types.sql`: Edits data types using SQL for card details data table.
+- `dim_data_time_corrected_data.sql`: Edits data types using SQL for date and time of orders data table.
+- `dim_products_delivery_team.sql` & `products_correct_data_type.sql`: Edits data types using SQL for products data table.
+- `dim_store_details_correct_data_types.sql`: Edits data types using SQL for store details data table.
+- `dim_users_correct_data_type.sql`: Edits data types using SQL for user details table.
+- `orders_table_correct_data_types.sql`: Edits data types and cleans orders data table.
 - `requirements.txt`: List of Python dependencies.
 
 ## License Information
