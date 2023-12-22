@@ -16,7 +16,9 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 
 3. `data_cleaning.py`: Implements a `DataCleaning` class with methods for cleaning user data, PDF data, store data, product data, orders data, and date details data.
 
-4. `querying_the_data.md`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text in Markdown format. This information is organised by task and the original working SQL code file can be found at `querying_the_data.sql`. 
+4. `querying_the_data.md`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text in Markdown format. This information is organised by task and the original working SQL code file can be found at `querying_the_data.sql`.
+   
+5. `EDA_%%%.ipynb`: Files beginning with EDA in the file name show exploratory data analysis and comments made during the data cleaning process.
 
 ## Installation Instructions
 1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
