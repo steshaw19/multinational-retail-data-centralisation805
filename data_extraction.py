@@ -100,7 +100,7 @@ class DataExtractor:
         all_stores_df = all_stores_df.set_index('index')
         return all_stores_df
     
-    # Extracts data from AWS S3 Bucket
+    # Extracts product data from AWS S3 Bucket
     def extract_from_s3(s3_address, aws_credentials_path='aws_access.yaml'):
         # Read AWS credentials from YAML file
         with open(aws_credentials_path, 'r') as file:
@@ -125,38 +125,35 @@ class DataExtractor:
         product_details_data = product_details_data.set_index(product_details_data.columns[0])
         return product_details_data
     
-    # Extracts JSON data from S3 Bucket
+    # Extracts JSON date_time table data from S3 Bucket
     def download_s3_data(self, s3_url):
         response = requests.get(s3_url)
         date_data = json.loads(response.text)
         return date_data
 
-
-# Create an instance of the DataExtractor class
-extractor = DataExtractor()
+extractor = DataExtractor() # Create an instance of the DataExtractor class
 
 # Read data from the RDS table (example table name: 'legacy_users')
 user_data_df = extractor.read_rds_table('legacy_users')
+orders_data_df = extractor.read_rds_table('orders_table')
 
-# Provide the PDF link as an argument to the retrieve_pdf_data method
+# Provide the PDF link as an argument to the retrieve_pdf_data method for card details
 pdf_data = extractor.retrieve_pdf_data('https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf')
 
-# API details
-number_of_stores_endpoint = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores/"
-store_endpoint_pattern = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details"
-headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
+# API details and calls method to retrieve store details from API
+number_of_stores_endpoint = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores/" # Retrieves number of stores available
+store_endpoint_pattern = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details" # Retrieves details for individual store
+headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"} # Headers to access API
+number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, headers) # Calls method to retrieve store count
+total_stores = number_of_stores.get('number_stores', 0) # Assigns variable for store count
+all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores) # Calls method to retrieve all store data
 
-# Calling the methods
-number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, headers)
-total_stores = number_of_stores.get('number_stores', 0)
-all_store_data = extractor.retrieve_stores_data(store_endpoint_pattern, headers, total_stores)
-
-# AWS credentials
+# AWS credentials for downloaded products data from AWS S3 Bucket
 aws_credentials_path = 'aws_access.yaml'
 s3_address = 's3://data-handling-public/products.csv'
 products_data = DataExtractor.extract_from_s3(s3_address, aws_credentials_path)
 
-# Download data from S3
+# Link and method to retrieve date_time details from S3 bucket
 s3_url = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
 date_details_data = extractor.download_s3_data(s3_url)
 

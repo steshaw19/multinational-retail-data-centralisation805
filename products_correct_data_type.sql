@@ -1,4 +1,4 @@
-SELECT new_ean FROM dim_products;
+SELECT * FROM dim_products;
 
 SELECT column_name, data_type
 FROM information_schema.columns
@@ -10,7 +10,7 @@ ALTER TABLE dim_products
 
 -- Change data type of 'product_price' from TEXT to FLOAT. Would not cast automatically, so used this work-around.
 ALTER TABLE dim_products
-ADD COLUMN new_product_price FLOAT;
+    ADD COLUMN new_product_price FLOAT;
 
 UPDATE dim_products
 SET new_product_price = NULLIF(product_price, '')::FLOAT;
@@ -33,7 +33,7 @@ ALTER TABLE dim_products
 
 -- Change data type of 'product_code' from TEXT to VARCHAR(?)
 ALTER TABLE dim_products
-ALTER COLUMN product_code TYPE VARCHAR(12);
+    ALTER COLUMN product_code TYPE VARCHAR(12);
 
 -- Change data type of 'date_added' from TEXT to DATE
 ALTER TABLE dim_products
@@ -49,7 +49,7 @@ ALTER TABLE dim_products
     TYPE BOOLEAN 
     USING 
         (CASE 
-            WHEN still_available = 'Still_avaliable' -- This spelling error needs to be watched out for.
+            WHEN still_available = 'Still_avaliable' -- This spelling error needs to be watched out for. I would have changed the spelling, but it was being changed to boolean anyhow.
             THEN TRUE 
             ELSE FALSE 
         END);

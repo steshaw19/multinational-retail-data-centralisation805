@@ -25,11 +25,11 @@ LIMIT 3;
 Returns:
 | country_code | total_no_stores |
 |--------------|-----------------|
-| GB           |             264 |
-| DE           |             139 |
-| US           |              33 |
+| GB           |             266 |
+| DE           |             141 |
+| US           |              34 |
 
-From the available data, the three most popular store locations are Great Britain (GB), Germany (DE), and the United States (US).
+From the available data, the three most popular store locations are Great Britain (GB), Germany (DE), and the United States (US). 
 
 ## Task 2
 The business stakeholders would like to know which locations currently have the most stores.
@@ -98,26 +98,20 @@ GROUP BY
     month
 ORDER BY
     "total_sales (£)" DESC
-LIMIT 12;
+LIMIT 6;
 ```
 Returns:
 | month      | total_sales (£) |
 |------------|------------------|
-| August     | 614084.65        |
-| January    | 611275.22        |
-| October    | 605163.53        |
-| July       | 591645.17        |
-| May        | 591025.28        |
-| March      | 585323.38        |
-| December   | 579222.23        |
-| June       | 578768.49        |
-| September  | 575246.48        |
-| November   | 574986.19        |
-| April      | 570757.81        |
-| February   | 564681.76        |
+| August     | 673295.68        |
+| January    | 668041.45        |
+| October    | 657335.84        |
+| May        | 650321.43        |
+| July       | 645741.70        |
+| March      | 645463.00        |
 
 
-The query took the numerical value given for each month and converted it to the name of the month to improve readability of the table. August was the most successful month for sales based on the number of products sold. All months were shown on the table due to the small number of rows it would produce.
+The query took the numerical value given for each month and converted it to the name of the month to improve readability of the table. August was the most successful month for sales based on the number of products sold. 
 
 ## Task 4
 
@@ -151,8 +145,8 @@ ORDER BY product_quantity_count ASC;
 Returns:
 | numbers_of_sales  | product_quantity_count | location_type  |
 |-------------------|------------------------|----------------|
-| 24689             | 98529                  | Web            |
-| 85103             | 341425                 | Offline        |
+| 26957             | 107739                 | Web            |
+| 93166             | 374047                 | Offline        |
 
 The analysis shows that offline sales are more than 3 times higher than web sales. This query joined `dim_sales_table` and `orders_table` through the store code to retrieve the amount of products sold. It then combined mall, kiosk etc... into offline sales leaving the web sales. The `CASE` method was moved into the `SELECT` method for this query to work.
 
@@ -187,13 +181,13 @@ ORDER BY
 Returns:
 | store_type   | total_sales  | percentage_total(%)  |
 |--------------|--------------|----------------------|
-| Local        | 3132748.77   | 44.49                |
-| Web Portal   | 1581269.40   | 22.45                |
-| Super Store  | 1112431.64   | 15.80                |
-| Mall Kiosk   | 636332.97    | 9.04                 |
-| Outlet       | 579397.41    | 8.23                 |
+| Local        | 3440896.52   | 44.56                |
+| Web portal   | 1726547.05   | 22.36                |
+| Super Store  | 1224293.65   | 15.85                |
+| Mall Kiosk   | 698791.61    | 9.05                 |
+| Outlet       | 631804.81    | 8.18                 |
 
-This query joined `dim_products`, `order_table`, and `dim_store_details` in order to answer the question. I struggled to round the data to 2 decimal places using `ROUND`, but made it work with the `CAST` function. This is something I may need to work on.
+This query joined `dim_products`, `order_table`, and `dim_store_details` in order to answer the question. I struggled to round the data to 2 decimal places using `ROUND`, but made it work with the `CAST` function. The total sales retrieved is exactly the same in the example and my code. However, the percentages are slightly different (although both equalling 100% when summed). I have calculated the individual percentages in mine which line up.
 
 ## Task 6
 
@@ -233,16 +227,16 @@ LIMIT 10;
 Returns:
 | total_sales(£) | year | month |
 |----------------|------|-------|
-| 25649.16       | 2019 | 1     |
-| 25568.32       | 1994 | 3     |
-| 25173.64       | 2009 | 8     |
-| 24549.25       | 1997 | 11    |
-| 24235.50       | 2010 | 5     |
-| 24150.96       | 1998 | 12    |
-| 24109.91       | 2017 | 9     |
-| 23556.99       | 2000 | 1     |
-| 23525.48       | 2012 | 8     |
-| 23484.53       | 2019 | 8     |
+| 27936.77       | 1994 | 3     |
+| 27356.14       | 2019 | 1     |
+| 27091.67       | 2009 | 8     |
+| 26679.98       | 1997 | 11    |
+| 26310.97       | 2018 | 12    |
+| 26277.72       | 2019 | 8     |
+| 26236.67       | 2017 | 9     |
+| 25798.12       | 2010 | 5     |
+| 25648.29       | 1996 | 8     |
+| 25614.54       | 2000 | 1     |
 
 This highlights August (8) as a month that has been successful for sales in various years with January (1) popping up twice.
 
@@ -270,9 +264,9 @@ ORDER BY
 Returns:
 | total_staff_numbers | country_code |
 |---------------------|--------------|
-| 13132               | GB           |
-| 6054                | DE           |
-| 1304                | US           |
+| 13307               | GB           |
+| 6123                | DE           |
+| 1384                | US           |
 
 ## Task 8
 The sales team is looking to expand their territory in Germany. Determine which type of store is generating the most sales in Germany.
@@ -301,15 +295,15 @@ WHERE
 GROUP BY
     dim_store_details.store_type, dim_store_details.country_code
 ORDER BY
-    "total_sales (£)" DESC;
+    "total_sales (£)" ASC;
 ```
 Returns:
 | total_sales (£) | store_type   | country_code |
 |-----------------|--------------|--------------|
-| 1011813.78      | Local        | DE           |
-| 345698.50       | Super Store  | DE           |
-| 224414.43       | Mall Kiosk   | DE           |
-| 181926.15       | Outlet       | DE           |
+| 198373.57        | Outlet      | DE           |
+| 247634.20        | Mall Kiosk  | DE           |
+| 384625.03        | Super Store | DE           |
+| 1109909.59       | Local       | DE           |
 
 This query was similiar to previous queries, however, a `WHERE` function was used to only gather 'DE' rows. Local stores are massing the most total sales currently, although it would be interesting to see the percentage of sales based on their number compared to other store types.
 
