@@ -18,7 +18,7 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 
 4. `querying_the_data.md`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text in Markdown format. This information is organised by task and the original working SQL code file can be found at `querying_the_data.sql`.
    
-5. `EDA_%%%.ipynb`: Files beginning with EDA in the file name show exploratory data analysis and comments made during the data cleaning process.
+5. `EDA_%%%.ipynb`: Files beginning with EDA in the file name shows exploratory data analysis and comments made during the data cleaning process.
 
 ## Installation Instructions
 1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
@@ -48,6 +48,7 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 - `database_utils.py`: Database connection utility class.
 - `data_extraction.py`: Data extraction and API interaction class.
 - `data_cleaning.py`: Data cleaning and database upload class.
+- `EDA_card_details.ipynb`: This file and all others beginning with EDA in its name shows exploratory data analysis for each table.
 - `querying_the_data.md`: Analysis of database using SQL.
 - `querying_the_data.sql`: Working document of SQL query code.
 - `dim_card_details_corrected_data_types.sql`: Edits data types using SQL for card details data table.
