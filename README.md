@@ -16,12 +16,14 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 
 3. `data_cleaning.py`: Implements a `DataCleaning` class with methods for cleaning user data, PDF data, store data, product data, orders data, and date details data.
 
-4. `querying_the_data.md`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text in Markdown format. This information is organised by task and the original working SQL code file can be found at `querying_the_data.sql`. 
+4. `querying_the_data.md`: Provides a description of each required analysis, the SQL query used and the returned data summarised in tables and text in Markdown format. This information is organised by task and the original working SQL code file can be found at `querying_the_data.sql`.
+   
+5. `EDA_%%%.ipynb`: Files beginning with EDA in the file name shows exploratory data analysis and comments made during the data cleaning process.
 
 ## Installation Instructions
 1. Clone the repository: `git clone https://github.com/steshaw19/multinational-retail-data-centralisation805`
 2. Install the required Python packages: `pip install -r requirements.txt`
-3. Install required SQL packages. This project used pgAdmin 4, SQLTools in VS Code, and SQLTools PostgreSQL/Cockroach Driver in VS Code. Full information on installation can be found in `sql_installation_requirements.sql`
+3. Install required SQL packages. This project uses pgAdmin 4, SQLTools in VS Code, and SQLTools PostgreSQL/Cockroach Driver in VS Code. Full information on installation can be found in `sql_installation_requirements.sql`
 
 ## Usage Instructions
 1. **Database Credentials**: Ensure that the credentials for the source and destination databases are correctly specified in the `db_creds.yaml` and `sales_data_creds.yaml` files.
@@ -46,6 +48,15 @@ This project focuses on data extraction, cleaning, and uploading to a database u
 - `database_utils.py`: Database connection utility class.
 - `data_extraction.py`: Data extraction and API interaction class.
 - `data_cleaning.py`: Data cleaning and database upload class.
+- `EDA_card_details.ipynb`: This file and all others beginning with EDA in its name shows exploratory data analysis for each table.
+- `querying_the_data.md`: Analysis of database using SQL.
+- `querying_the_data.sql`: Working document of SQL query code.
+- `dim_card_details_corrected_data_types.sql`: Edits data types using SQL for card details data table.
+- `dim_data_time_corrected_data.sql`: Edits data types using SQL for date and time of orders data table.
+- `dim_products_delivery_team.sql` & `products_correct_data_type.sql`: Edits data types using SQL for products data table.
+- `dim_store_details_correct_data_types.sql`: Edits data types using SQL for store details data table.
+- `dim_users_correct_data_type.sql`: Edits data types using SQL for user details table.
+- `orders_table_correct_data_types.sql`: Edits data types and cleans orders data table.
 - `requirements.txt`: List of Python dependencies.
 
 ## License Information
